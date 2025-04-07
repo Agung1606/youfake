@@ -6,7 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "@/context/global-provider";
 import images from "@/constants/images";
@@ -15,13 +15,28 @@ import { FeaturedCard } from "@/components/Cards";
 import NoResults from "@/components/NoResults";
 import { useAppwrite } from "@/lib/useAppwrite";
 import { getVideos } from "@/lib/appwrite";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import Filters from "@/components/Filters";
 
 const Index = () => {
   const { user } = useGlobalContext();
-  const { data, loading } = useAppwrite({ fn: getVideos });
+  const params = useLocalSearchParams<{ filter?: string }>();
 
   const handleCardPress = (id: string) => router.push(`/watch/${id}`);
+
+  const { data, loading, refetch } = useAppwrite({
+    fn: getVideos,
+    params: {
+      filter: params.filter!,
+    },
+  });
+
+  useEffect(() => {
+    refetch({
+      filter: params.filter!,
+    });
+  }, [params.filter]);
+
   return (
     <SafeAreaView className="bg-white h-full">
       <FlatList
@@ -37,25 +52,28 @@ const Index = () => {
         contentContainerClassName="pb-20"
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <View className="flex flex-row justify-between items-center px-4 py-2 mb-4 border-b border-primary-200">
-            <View className="flex flex-row items-center gap-x-2">
-              <Image
-                source={images.icon}
-                className="size-12"
-                resizeMode="contain"
-              />
-              <Text className="text-xl font-rubik">
-                Hello,{" "}
-                <Text className="text-primary-300">{user?.username}</Text>
-              </Text>
+          <View className="px-4 py-2 mb-4">
+            <View className="flex flex-row justify-between items-center border-b border-primary-200">
+              <View className="flex flex-row items-center gap-x-2">
+                <Image
+                  source={images.icon}
+                  className="size-12"
+                  resizeMode="contain"
+                />
+                <View>
+                  <Text className="font-rubik text-sm">Hello,</Text>
+                  <Text className="font-rubik-medium">{user?.username}</Text>
+                </View>
+              </View>
+              <TouchableOpacity>
+                <Image
+                  source={icons.search}
+                  className="size-7"
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity>
-              <Image
-                source={icons.search}
-                className="size-7"
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
+            <Filters />
           </View>
         }
         ListEmptyComponent={

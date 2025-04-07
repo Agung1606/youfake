@@ -120,12 +120,18 @@ export async function signOut() {
   }
 }
 
-export async function getVideos() {
+export async function getVideos({ filter }: { filter: string }) {
   try {
+    const buildQuery = [Query.orderDesc("$createdAt")];
+
+    if (filter && filter !== "All") {
+      buildQuery.push(Query.equal("type", filter));
+    }
+
     const results = await databases.listDocuments(
       config.databaseId!,
       config.videosCollectionId!,
-      [Query.orderDesc("$createdAt")]
+      buildQuery
     );
 
     return results.documents;
