@@ -35,6 +35,7 @@ import eye from "@/assets/icons/eye.png";
 import eyeHide from "@/assets/icons/eye-hide.png";
 import videoCamera from "@/assets/icons/video-camera.png";
 import threeDots from "@/assets/icons/three-dots.png";
+import warning from "@/assets/icons/warning.png";
 
 export default {
   google,
@@ -59,4 +60,5 @@ export default {
   eyeHide,
   videoCamera,
   threeDots,
+  warning
 };

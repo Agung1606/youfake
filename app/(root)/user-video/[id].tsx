@@ -8,21 +8,20 @@ import {
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useGlobalContext } from "@/context/global-provider";
+import { router, useLocalSearchParams } from "expo-router";
 import icons from "@/constants/icons";
-import { router } from "expo-router";
 import { useAppwrite } from "@/lib/useAppwrite";
 import { getVidoesByUserId } from "@/lib/appwrite";
 import { FeaturedCard } from "@/components/Cards";
 import NoResults from "@/components/NoResults";
 
-const MyVideos = () => {
-  const { user, loading } = useGlobalContext();
+const UserVideo = () => {
+  const params = useLocalSearchParams<{ id?: string }>();
 
-  const { data } = useAppwrite({
+  const { data, loading } = useAppwrite({
     fn: getVidoesByUserId,
     params: {
-      id: user?.$id,
+      id: params.id!,
     },
   });
 
@@ -30,26 +29,20 @@ const MyVideos = () => {
   return (
     <SafeAreaView className="bg-white h-full">
       <View className="my-4 px-4 flex flex-row justify-between items-center">
-        <TouchableOpacity
-          onPress={() => router.navigate("/(root)/(tabs)/profile")}
-        >
+        <TouchableOpacity onPress={() => router.back()}>
           <Image
             source={icons.backArrow}
             className="size-9"
             resizeMode="contain"
           />
         </TouchableOpacity>
-        <Text className="font-rubik-medium text-lg">My Videos</Text>
+        <Text className="font-rubik-medium text-lg">Videos</Text>
       </View>
       <FlatList
         data={data}
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
-          <FeaturedCard
-            onPress={() => handleCardPress(item.$id)}
-            userID={user?.$id}
-            item={item}
-          />
+          <FeaturedCard onPress={() => handleCardPress(item.$id)} item={item} />
         )}
         contentContainerClassName="pb-20"
         showsVerticalScrollIndicator={false}
@@ -68,4 +61,4 @@ const MyVideos = () => {
   );
 };
 
-export default MyVideos;
+export default UserVideo;

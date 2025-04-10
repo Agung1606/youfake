@@ -7,15 +7,15 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect } from "react";
+import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "@/context/global-provider";
 import images from "@/constants/images";
 import icons from "@/constants/icons";
-import { FeaturedCard } from "@/components/Cards";
-import NoResults from "@/components/NoResults";
 import { useAppwrite } from "@/lib/useAppwrite";
 import { getVideos } from "@/lib/appwrite";
-import { router, useLocalSearchParams } from "expo-router";
+import { FeaturedCard } from "@/components/Cards";
+import NoResults from "@/components/NoResults";
 import Filters from "@/components/Filters";
 
 const Index = () => {
@@ -45,7 +45,8 @@ const Index = () => {
         renderItem={({ item }) => (
           <FeaturedCard
             onPress={() => handleCardPress(item.$id)}
-            userID={user?.$id}
+            myId={user?.$id}
+            visitProfileId={item.user.$id}
             item={item}
           />
         )}

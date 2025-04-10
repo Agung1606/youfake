@@ -120,6 +120,20 @@ export async function signOut() {
   }
 }
 
+export async function getUserByUserId({ id }: { id: string }) {
+  try {
+    const result = await databases.getDocument(
+      config.databaseId!,
+      config.usersCollectionId!,
+      id
+    );
+    return result;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 export async function getVideos({ filter }: { filter: string }) {
   try {
     const buildQuery = [Query.orderDesc("$createdAt")];

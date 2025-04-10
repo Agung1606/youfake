@@ -6,9 +6,11 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import humanize from "humanize-number";
 import icons from "@/constants/icons";
+import { router } from "expo-router";
 
 interface Props {
-  userID?: string;
+  myId?: string;
+  visitProfileId?: string;
   item: Models.Document;
   onPress?: () => void;
 }
@@ -16,7 +18,47 @@ interface Props {
 // Extend dayjs with relativeTime
 dayjs.extend(relativeTime);
 
-export const FeaturedCard = ({ userID, item, onPress }: Props) => {
+export const ClickableImage = ({
+  id,
+  myId,
+  avatarUri,
+}: {
+  id?: string;
+  myId?: string;
+  avatarUri: string;
+}) => {
+  const handlePress = () => {
+    if (!id && !myId) {
+      return;
+    }
+
+    if(id === myId) {
+      router.push('/(root)/(tabs)/profile');
+      return;
+    }
+    if(id) {
+      router.push(`/visit-profile/${id}`)
+      return;
+    }
+  };
+
+  return (
+    <TouchableOpacity onPress={handlePress}>
+      <Image
+        source={{ uri: avatarUri }}
+        className="size-10 rounded-full"
+        resizeMode="cover"
+      />
+    </TouchableOpacity>
+  );
+};
+
+export const FeaturedCard = ({
+  myId,
+  visitProfileId,
+  item,
+  onPress,
+}: Props) => {
   return (
     <View className="mb-8">
       <TouchableOpacity onPress={onPress}>
@@ -35,10 +77,10 @@ export const FeaturedCard = ({ userID, item, onPress }: Props) => {
       </TouchableOpacity>
       <View className="flex flex-row justify-between mt-4 px-3">
         <View className="flex flex-row gap-x-4">
-          <Image
-            source={{ uri: item.user.avatar }}
-            className="size-11 rounded-full"
-            resizeMode="cover"
+          <ClickableImage
+            id={visitProfileId}
+            myId={myId}
+            avatarUri={item.user.avatar}
           />
           <View>
             <Text
@@ -55,7 +97,7 @@ export const FeaturedCard = ({ userID, item, onPress }: Props) => {
             </Text>
           </View>
         </View>
-        {userID === item.user.$id && (
+        {myId === item.user.$id && (
           <TouchableOpacity>
             <Image
               source={icons.threeDots}
